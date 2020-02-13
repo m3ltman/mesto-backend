@@ -1,12 +1,16 @@
 /* eslint-disable linebreak-style */
 const express = require('express');
-const path = require('path');
+const mongoose = require('mongoose');
 const router = require('./routes/router');
+const bodyParser = require('body-parser');
+const { hardCodedId, PORT, dbLink, dbOptions } = require('./configuration/config');
 
-const { PORT = 3000 } = process.env;
 const app = express();
 
-app.use(express.static(path.join(__dirname, 'public')));
+mongoose.connect(dbLink, dbOptions);
+
+app.use(hardCodedId);
+app.use(bodyParser.json());
 app.use(router);
 
 app.listen(PORT, () => {

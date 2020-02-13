@@ -1,8 +1,8 @@
-/* eslint-disable linebreak-style */
-const cards = require('../data/cards');
+const cardsRouter = require('express').Router();
+const cards = require('../controllers/cards');
 
-const sendCard = (req, res) => {
-  res.send(cards);
-}
+cardsRouter.get('/cards', cards.getCards);
+cardsRouter.post('/cards', cards.createCard);
+cardsRouter.delete('/cards/:cardId', cards.deleteCard);
 
-module.exports = sendCard;
+module.exports = cardsRouter;
