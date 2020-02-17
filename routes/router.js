@@ -4,8 +4,8 @@ const usersRouter = require('./users');
 const cardsRouter = require('./cards');
 
 const sendStatus = (req, res) => {
-    res.status(404).send({ "message": "Запрашиваемый ресурс не найден" });
-}
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
+};
 
 router.use(usersRouter);
 router.use(cardsRouter);

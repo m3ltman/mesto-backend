@@ -6,18 +6,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 2,
-    maxlength: 30
+    maxlength: 30,
   },
   about: {
     type: String,
     required: true,
     minlength: 2,
-    maxlength: 30
+    maxlength: 30,
   },
   avatar: {
     type: String,
     required: true,
-  }
+  },
 });
 
 userSchema.path('avatar').validate(validator.isURL, 'Неверный формат ссылки');

@@ -1,8 +1,8 @@
 /* eslint-disable linebreak-style */
 const express = require('express');
 const mongoose = require('mongoose');
-const router = require('./routes/router');
 const bodyParser = require('body-parser');
+const router = require('./routes/router');
 const { hardCodedId, PORT, dbLink, dbOptions } = require('./configuration/config');
 
 const app = express();
