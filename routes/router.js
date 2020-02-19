@@ -7,8 +7,8 @@ const sendStatus = (req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 };
 
-router.use(usersRouter);
-router.use(cardsRouter);
+router.use('/users', usersRouter);
+router.use('/cards', cardsRouter);
 router.get('*', sendStatus);
 
 module.exports = router;

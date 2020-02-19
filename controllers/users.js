@@ -5,7 +5,7 @@ const User = require('../models/user');
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((users) => (users ? res.status(200).send(users) : res.status(200).send([])))
+    .then((users) => (users ? res.status(200).send(users) : res.status(200).send(users)))
     .catch(() => res.status(500).send({ message: 'Internal Server Error' }));
 };
 

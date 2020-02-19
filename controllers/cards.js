@@ -5,7 +5,7 @@ const Card = require('../models/card');
 
 const getCards = (req, res) => {
   Card.find({})
-    .then((cards) => (cards ? res.status(200).send(cards) : res.status(200).send([])))
+    .then((cards) => (cards ? res.status(200).send(cards) : res.status(200).send(cards)))
     .catch(() => res.status(500).send({ message: 'Internal Server Error' }));
 };
 
@@ -19,7 +19,7 @@ const createCard = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Validation Failed' });
+        return res.status(400).send({ message: err.message });
       }
       return res.status(500).send({ message: 'Internal Server Error' });
     });
