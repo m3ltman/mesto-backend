@@ -37,7 +37,7 @@ const deleteCard = (req, res) => {
       if (!card) {
         return res.status(404).send({ message: 'Not found' });
       }
-      return card.owner.toString() !== payload._id ? res.status(401).send({ message: 'Unauthorized' }) : Card.deleteOne(card).then(() => res.status(200).send(card));
+      return card.owner.toString() !== payload._id ? res.status(403).send({ message: 'Forbidden' }) : Card.deleteOne(card).then(() => res.status(200).send(card));
     })
     .catch((err) => {
       if (!ObjectId.isValid(cardId)) {
