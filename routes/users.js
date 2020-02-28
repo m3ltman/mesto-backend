@@ -1,9 +1,14 @@
+/* eslint-disable object-curly-newline */
 const usersRouter = require('express').Router();
-const users = require('../controllers/users');
+const { getUsers, createUser, getUser, login } = require('../controllers/users');
+const { userValidaton } = require('../middlewares/validation');
+const auth = require('../middlewares/auth');
 
-usersRouter.get('/', users.getUsers);
-usersRouter.post('/', users.createUser);
-usersRouter.get('/:userId', users.getUser);
+usersRouter.post('/signup', userValidaton, createUser);
+usersRouter.post('/signin', login);
 
+usersRouter.use(auth);
+usersRouter.get('/', getUsers);
+usersRouter.get('/:userId', getUser);
 
 module.exports = usersRouter;
