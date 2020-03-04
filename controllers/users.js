@@ -1,33 +1,36 @@
 /* eslint-disable object-curly-newline */
-const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
-const { JWT_SECRET } = require('../configuration/config');
+const { NODE_ENV, JWT_SECRET } = require('../configuration/config');
 const User = require('../models/user');
+const NotFoundError = require('../errors/NotFoundErr');
+const BadRequestError = require('../errors/BadRequest');
+const UnathorizedErr = require('../errors/UnauthorizedErr');
 
-const { ObjectId } = mongoose.Types;
-
-
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => (users ? res.status(200).send(users) : res.status(200).send(users)))
-    .catch(() => res.status(500).send({ message: 'Internal Server Error' }));
+    .catch(next);
 };
 
-const getUser = (req, res) => {
+const getUser = (req, res, next) => {
   const { userId } = req.params;
   User.findById(userId)
-    .then((user) => (user ? res.status(200).send(user) : res.status(404).send({ message: 'Not Found' })))
-    .catch(() => {
-      if (!ObjectId.isValid(userId)) {
-        return res.status(400).send({ message: 'Bad Request' });
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Not Found');
       }
-      return res.status(500).send({ message: 'Internal Server Error' });
+      return res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(new BadRequestError('Bad request'));
+      }
+      return next(err);
     });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({ name, about, avatar, email, password: hash }))
@@ -39,19 +42,19 @@ const createUser = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
-      return res.status(500).send({ message: err.message });
+      return next(err);
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        JWT_SECRET,
+        NODE_ENV === 'production' ? 'dev_secret' : JWT_SECRET,
         { expiresIn: '7d' },
       );
       res.cookie('jwt', token, {
@@ -62,9 +65,9 @@ const login = (req, res) => {
     })
     .catch((err) => {
       if (err.message !== 'Неправильные почта или пароль') {
-        return res.status(500).send({ message: err.message });
+        return next(err);
       }
-      return res.status(401).send({ message: err.message });
+      return next(new UnathorizedErr(err.message));
     });
 };
 
