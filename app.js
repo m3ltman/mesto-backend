@@ -7,6 +7,7 @@ const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
 const router = require('./routes/router');
 const { PORT, dbLink, dbOptions } = require('./configuration/config');
+const { errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(router);
 app.use(errors());
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log('Server is running on port 3000');
