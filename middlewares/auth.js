@@ -1,7 +1,7 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable consistent-return */
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../configuration/config');
+const { NODE_ENV, JWT_SECRET } = require('../configuration/config');
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, JWT_SECRET);
+    payload = jwt.verify(token, NODE_ENV === 'production' ? 'dev_secret' : JWT_SECRET);
   } catch (err) {
     return res.status(401).send({ message: 'Unauthorized' });
   }
