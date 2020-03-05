@@ -29,8 +29,7 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  const token = req.headers.authorization.replace('Bearer ', '');
-  const payload = jwt.verify(token, NODE_ENV === 'production' ? 'dev_secret' : JWT_SECRET);
+  const payload = jwt.verify(req.cookies.jwt, NODE_ENV !== 'production' ? 'dev_secret' : JWT_SECRET);
 
   Card.findById(cardId)
     .then((card) => {
