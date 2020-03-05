@@ -25,7 +25,8 @@ const userLoginCheck = celebrate({
 
 const idCheck = celebrate({
   params: Joi.object().keys({
-    ['userId' && 'cardId']: Joi.string().alphanum().length(24),
+    cardId: Joi.string().alphanum().length(24),
+    userId: Joi.string().alphanum().length(24),
   }),
 });
 
