@@ -4,8 +4,8 @@ const userCreateCheck = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
     about: Joi.string().min(2).max(30).required(),
-    avatar: Joi.string().required(),
-    email: Joi.string().required(),
+    avatar: Joi.string().required().uri(),
+    email: Joi.string().required().email(),
     password: Joi.string().min(8).required(),
   }),
   headers: Joi.object().keys({
@@ -15,7 +15,7 @@ const userCreateCheck = celebrate({
 
 const userLoginCheck = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required(),
+    email: Joi.string().required().email(),
     password: Joi.string().min(8).required(),
   }),
   headers: Joi.object().keys({
@@ -33,7 +33,7 @@ const idCheck = celebrate({
 const cardCreateCheck = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required(),
-    link: Joi.string().required(),
+    link: Joi.string().required().uri(),
   }),
   headers: Joi.object().keys({
     'content-type': Joi.string().valid('application/json').required(),
