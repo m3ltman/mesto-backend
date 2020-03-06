@@ -8,6 +8,7 @@ const dbOptions = {
   useFindAndModify: false,
   useUnifiedTopology: true,
 };
+const key = NODE_ENV !== 'production' ? 'dev_secret' : JWT_SECRET;
 
 module.exports = {
   PORT,
@@ -15,4 +16,5 @@ module.exports = {
   dbOptions,
   NODE_ENV,
   JWT_SECRET,
+  key,
 };
