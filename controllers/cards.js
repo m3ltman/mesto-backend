@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { NODE_ENV, JWT_SECRET } = require('../configuration/config');
+const { key } = require('../configuration/config');
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequest');
 const NotFoundErr = require('../errors/NotFoundErr');
@@ -29,7 +29,7 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  const payload = jwt.verify(req.cookies.jwt, NODE_ENV !== 'production' ? 'dev_secret' : JWT_SECRET);
+  const payload = jwt.verify(req.cookies.jwt, key);
 
   Card.findById(cardId)
     .then((card) => {
