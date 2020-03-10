@@ -3,9 +3,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { key } = require('../configuration/config');
 const User = require('../models/user');
-const NotFoundError = require('../errors/NotFoundErr');
+const NotFoundError = require('../errors/NotFound');
 const BadRequestError = require('../errors/BadRequest');
-const UnathorizedErr = require('../errors/UnauthorizedErr');
+const UnathorizedError = require('../errors/Unauthorized');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -67,7 +67,7 @@ const login = (req, res, next) => {
       if (err.message !== 'Неправильные почта или пароль') {
         return next(err);
       }
-      return next(new UnathorizedErr(err.message));
+      return next(new UnathorizedError(err.message));
     });
 };
 

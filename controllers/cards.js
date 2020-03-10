@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken');
 const { key } = require('../configuration/config');
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequest');
-const NotFoundErr = require('../errors/NotFoundErr');
-const ForbiddenErr = require('../errors/ForbiddenErr');
+const NotFoundError = require('../errors/NotFound');
+const ForbiddenError = require('../errors/Forbidden');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -33,11 +33,11 @@ const deleteCard = (req, res, next) => {
 
   Card.findById(cardId)
     .orFail(() => {
-      throw new NotFoundErr('Not Found');
+      throw new NotFoundError('Not Found');
     })
     .then((card) => {
       if (card.owner.toString() !== payload._id) {
-        throw new ForbiddenErr('Forbidden');
+        throw new ForbiddenError('Forbidden');
       }
       return Card.deleteOne(card).then(() => res.status(200).send(card));
     })

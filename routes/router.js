@@ -2,7 +2,7 @@
 const router = require('express').Router();
 const usersRouter = require('./users');
 const cardsRouter = require('./cards');
-const NotFoundError = require('../errors/NotFoundErr');
+const NotFoundError = require('../errors/NotFound');
 
 const sendStatus = () => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');
