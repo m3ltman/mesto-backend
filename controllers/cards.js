@@ -32,14 +32,14 @@ const deleteCard = (req, res, next) => {
   const payload = jwt.verify(req.cookies.jwt, key);
 
   Card.findById(cardId)
+    .orFail(() => {
+      throw new NotFoundErr('Not Found');
+    })
     .then((card) => {
-      if (!card) {
-        throw new NotFoundErr('Not Found');
-      } else if (card.owner.toString() !== payload._id) {
+      if (card.owner.toString() !== payload._id) {
         throw new ForbiddenErr('Forbidden');
-      } else {
-        Card.deleteOne(card).then(() => res.status(200).send(card));
       }
+      return Card.deleteOne(card).then(() => res.status(200).send(card));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
