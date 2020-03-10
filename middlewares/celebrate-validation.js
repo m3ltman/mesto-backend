@@ -1,10 +1,11 @@
 const { celebrate, Joi } = require('celebrate');
+const { UrlRegExp } = require('../configuration/config');
 
 const userCreateCheck = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
     about: Joi.string().min(2).max(30).required(),
-    avatar: Joi.string().required().uri(),
+    avatar: Joi.string().required().uri().pattern(UrlRegExp, 'URL'),
     email: Joi.string().required().email(),
     password: Joi.string().min(8).required(),
   }),
@@ -33,7 +34,7 @@ const idCheck = celebrate({
 const cardCreateCheck = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required(),
-    link: Joi.string().required().uri(),
+    link: Joi.string().required().uri().pattern(UrlRegExp, 'URL'),
   }),
   headers: Joi.object().keys({
     'content-type': Joi.string().valid('application/json').required(),
