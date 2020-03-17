@@ -1,17 +1,17 @@
-const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../configuration/config');
-
-const { ObjectId } = mongoose.Types;
+const { key } = require('../configuration/config');
 const Card = require('../models/card');
+const BadRequestError = require('../errors/BadRequest');
+const NotFoundError = require('../errors/NotFound');
+const ForbiddenError = require('../errors/Forbidden');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => (cards ? res.status(200).send(cards) : res.status(200).send(cards)))
-    .catch(() => res.status(500).send({ message: 'Internal Server Error' }));
+    .catch(next);
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const owner = req.user._id;
   const { name, link } = req.body;
   Card.create({ name, link, owner })
@@ -21,29 +21,31 @@ const createCard = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
-      return res.status(500).send({ message: 'Internal Server Error' });
+      return next(err);
     });
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  const token = req.headers.authorization.replace('Bearer ', '');
-  const payload = jwt.verify(token, JWT_SECRET);
+  const payload = jwt.verify(req.cookies.jwt, key);
 
   Card.findById(cardId)
+    .orFail(() => {
+      throw new NotFoundError('Not Found');
+    })
     .then((card) => {
-      if (!card) {
-        return res.status(404).send({ message: 'Not found' });
+      if (card.owner.toString() !== payload._id) {
+        throw new ForbiddenError('Forbidden');
       }
-      return card.owner.toString() !== payload._id ? res.status(403).send({ message: 'Forbidden' }) : Card.deleteOne(card).then(() => res.status(200).send(card));
+      return Card.deleteOne(card).then(() => res.status(200).send(card));
     })
     .catch((err) => {
-      if (!ObjectId.isValid(cardId)) {
-        return res.status(400).send({ message: 'Bad request' });
+      if (err.name === 'CastError') {
+        return next(new BadRequestError('Bad request'));
       }
-      return res.status(500).send({ message: err.message });
+      return next(err);
     });
 };
 

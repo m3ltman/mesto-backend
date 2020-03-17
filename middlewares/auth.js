@@ -1,22 +1,18 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable consistent-return */
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../configuration/config');
+const { key } = require('../configuration/config');
+const UnathorizedError = require('../errors/Unauthorized');
 
 module.exports = (req, res, next) => {
-  const { authorization } = req.headers;
-
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    return res.status(401).send({ message: 'Unauthorized' });
+  if (!req.cookies.jwt) {
+    throw new UnathorizedError('Unathorized');
   }
 
-  const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
-    payload = jwt.verify(token, JWT_SECRET);
+    payload = jwt.verify(req.cookies.jwt, key);
   } catch (err) {
-    return res.status(401).send({ message: 'Unauthorized' });
+    next(new UnathorizedError(err.message));
   }
   req.user = payload;
 
